@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title></title>
+	<style type="text/css">
+	.tabBar {
+		position: relative;
+		width: 470px;
+		height: 150px;
+		margin: 50px;
+		overflow: hidden;
+	}
+	.tabBar ul {
+		position: absolute;
+		left: 0;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	.tabBar ul li {
+		float: left;
+		width: 470px;
+		height: 150px;
+	}
+	</style>
+</head>
+<body>
+	<div class="tabBar">
+		<ul>
+			<li><img src="img/1.jpg"></li>
+			<li><img src="img/2.jpg"></li>
+			<li><img src="img/3.jpg"></li>
+			<li><img src="img/4.jpg"></li>
+			<li><img src="img/5.jpg"></li>
+		</ul>
+	</div>
+	<script src="move.js"></script>
+	<script type="text/javascript">
+	function iosImgBar () {
+		document.ontouchmove = function(ev){
+			ev.preventDefault();
+		 };
+		var oDiv = document.querySelector(".tabBar"),
+			oUl = oDiv.querySelector("ul"),
+			oLis = oUl.querySelectorAll("li"),
+			len = oLis.length,
+			current = 0,
+			liWidth = oLis[0].offsetWidth,
+		 	maxLeftGap = -liWidth * (len - 1);
+		 oUl.style.width = liWidth * len + "px";
+		 oUl.ontouchstart = function(ev) {
+		 	//移动端中存在多指操作，所以单指时需要先获取当前的手指
+		 	var touchs = ev.changedTouches[0],
+		 		liLeft = this.offsetLeft,
+		 		touchX = touchs.pageX,
+		 		touchTime = Date.now(),
+		 		switchFlag = true;
+	 		oUl.ontouchmove = function(ev) {
+	 			var touchs = ev.changedTouches[0];
+	 			if(this.offsetLeft >= 0) {
+	 				//从第二张灰滑到第一张时，touchX为在之前的值，
+	 				//会产生跳跃的感觉，最后一张情况相同
+	 				if(switchFlag) {
+	 					switchFlag = false;
+	 					touchX = touchs.pageX;
+	 				}
+	 				this.style.left = (touchs.pageX - touchX) / 3 + "px";
+	 			}else if(this.offsetLeft <= maxLeftGap ) {
+	 				if(switchFlag) {
+	 					switchFlag = false;
+	 					touchX = touchs.pageX;
+	 				}
+	 				this.style.left = (touchs.pageX - touchX) / 3 + maxLeftGap + "px";
+	 			}else {
+	 				this.style.left = touchs.pageX - touchX + liLeft + "px";
+	 			}
+	 		}
+
+	 		oUl.ontouchend = function(ev) {
+	 			var touchs = ev.changedTouches[0],
+	 				gap = touchX - touchs.pageX;
+	 			var flag = Math.abs(gap) > liWidth/2 ||
+		 					Date.now() - touchTime < 300 &&
+		 					Math.abs(gap) > 30;
+	 			if(touchs.pageX < touchX) {//left
+	 				if(current < len - 1 && flag){
+		 				current++;
+	 				}
+	 			}else {
+	 				if(current > 0 && flag){
+		 				current--;
+	 				}
+	 			}
+	 			startMove(oUl,{left : -current * liWidth},400,'easeOut');
+	 			this.ontouchmove = null;
+	 			this.ontouchend = null;
+	 		}
+		 }
+	}
+	window.onload = function () {
+		 iosImgBar();
+	}
+	</script>
+</body>
+</html>
