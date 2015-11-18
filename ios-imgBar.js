@@ -43,7 +43,7 @@ class ImgBar extends React.Component {
 		let touchs = ev.changedTouches[0],
 			{oUl,switchFlag, touchX, liLeft, maxLeftGap} = this.state,
 			left = null;
-			console.log(switchFlag);
+
 		if(oUl.offsetLeft >= 0) {
 			//从第二张灰滑到第一张时，touchX为在之前的值，
 			//会产生跳跃的感觉，最后一张情况相同
@@ -87,27 +87,31 @@ class ImgBar extends React.Component {
 		});
 	}
 	render() {
-		let	style = {
-			left: this.state.left
-		}
-
 		return (
 			<div className="tabBar" ref="container">
 				<ul onTouchStart={this.handleTouchStart.bind(this)}
 					onTouchMove={this.handleTouchMove.bind(this)}
 					onTouchEnd={this.handleTouchEnd.bind(this)}
-					style={style||{}}>
-					<li><img src="dist/img/1.jpg"/></li>
-					<li><img src="dist/img/2.jpg"/></li>
-					<li><img src="dist/img/3.jpg"/></li>
-					<li><img src="dist/img/4.jpg"/></li>
-					<li><img src="dist/img/5.jpg"/></li>
+					style={{left: this.state.left}}>
+					{this.props.images.map((val, i)=>{
+						return (
+							<li key={i}>
+								<img src={val} />
+							</li>
+						);
+					})}
 				</ul>
 			</div>
 		);
 	}
 }
 ReactDOM.render(
-	<ImgBar />,
+	<ImgBar images={[
+		"dist/img/1.jpg",
+		"dist/img/2.jpg",
+		"dist/img/3.jpg",
+		"dist/img/4.jpg",
+		"dist/img/5.jpg"
+	]}/>,
 	document.getElementById("example")
 );
