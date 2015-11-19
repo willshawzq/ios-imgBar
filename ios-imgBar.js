@@ -25,6 +25,9 @@ class ImgBar extends React.Component {
 		});
 		oUl.style.width = liWidth * len + "px";
 	}
+	componentWillUnmout() {
+		document.ontouchmove = null;
+	}
 	componentDidUpdate() {
 		let {oUl, current, liWidth} = this.state;
 		startMove(oUl,{left : -current * liWidth},400,'easeOut');
